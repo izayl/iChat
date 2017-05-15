@@ -23,8 +23,6 @@ Vue.use(VueTimeago, {
 // Vue.use(Vuex)
 Vue.use(ToastPlugin)
 
-var io = window.io
-
 FastClick.attach(document.body)
 
 Vue.config.productionTip = false
@@ -34,7 +32,6 @@ new Vue({
   el: '#app',
   store,
   router,
-  io,
   template: '<App/>',
   components: { App }
 })

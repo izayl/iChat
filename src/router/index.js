@@ -36,6 +36,10 @@ export default new Router({
       name: 'User',
       component: view('user')
     }, {
+      path: '/rtc/:userId',
+      name: 'RTC',
+      component: view('rtc')
+    }, {
       path: '/test',
       name: 'Test',
       component: () => import('../components/list.vue')

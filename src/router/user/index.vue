@@ -15,7 +15,8 @@
                 <time-ago class="chat-message__time" :since="message.time" :max-time="86400 * 8"
                           :auto-update="60"></time-ago>
                 <div class="chat-message__content">
-                  <p>{{message.content}}</p>
+                  <p v-if="!message.isVideo">{{message.content}}</p>
+                  <a v-if="message.isVideo" :href="message.content">视频邀请</a>
                 </div>
               </flexbox>
             </div>
@@ -27,7 +28,7 @@
     <div class="chat-input vux-1px-t">
       <flexbox>
         <flexbox-item style="flex-grow: 1; text-align: center">
-          <span class="iconfont icon-microphone"></span>
+          <span class="iconfont icon-microphone" @click="facetime"></span>
         </flexbox-item>
         <flexbox-item style="flex-grow: 5;">
           <textarea rows="1" ref="textarea" v-model="message" autofocus/>
@@ -66,8 +67,19 @@
       }
     }),
     methods: {
+      facetime () {
+        this.$router.push('/rtc/' + this.friendId)
+        this.$store.commit('sendMessage', {
+          toUser: this.friendId,
+          content: '#/rtc/' + this.friendId,
+          isVideo: true
+        })
+        this.message = ''
+        Autosize(this.$refs.textarea)
+        this.$refs.textarea.focus()
+      },
       back () {
-        this.$route.replace('/chatList')
+        this.$router.replace('/chatList')
       },
       send () {
         this.$store.commit('sendMessage', {
