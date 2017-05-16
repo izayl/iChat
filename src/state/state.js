@@ -26,6 +26,12 @@ socket.on('receiveFromUser', function (data) {
   store.commit('receiveMessage', data)
 })
 
+// be called by somebody
+socket.on('called', function (data) {
+  Vue.$router.push('#/rtc/' + data)
+  store.commit('changeCallStatus', 2)
+})
+
 var peerConnection
 var peerConnectionConfig = {
   'iceServers': [
@@ -37,17 +43,19 @@ var localStream
 
 var store = new Vuex.Store({
   state: {
-    userId: '',
+    userId: localStorage.getItem('userId') ? localStorage.getItem('userId') : '',
     connected: false,
     clientId: null,
     chatStorage: {},
     searchList: [],
-    friends: localStorage.getItem('friends') ? JSON.parse(localStorage.getItem('friends')) : {}
+    friends: localStorage.getItem('friends') ? JSON.parse(localStorage.getItem('friends')) : {},
+    callStatus: 0 // 0: noting , 1: calling, 2: be called
   },
   mutations: {
     connecting (state, userId) {
       socket.connect()
       state.userId = userId || state.userId
+      localStorage.setItem('userId', state.userId)
     },
     connected (state, socket) {
       state.connected = true
@@ -121,9 +129,12 @@ var store = new Vuex.Store({
       }
     },
     closeRTC (state) {
+    //  TODO: add peerConnection Close function
       peerConnection.close()
+    },
+    changeCallStatus (state, status) {
+      state.callStatus = status
     }
-  //  TODO: add peerConnection Close function
   },
   actions: {
     search ({ commit }, username) {
@@ -132,7 +143,7 @@ var store = new Vuex.Store({
         .then(res => commit('search', res.data))
         .catch(e => console.log(e))
     },
-    presetRTC ({ commit }, localVideo) {
+    presetRTC ({ commit }, { localVideo, to }) {
       socket.on('message', message => {
         console.log('on message')
         console.dir(message)
@@ -178,6 +189,8 @@ var store = new Vuex.Store({
       function getUserMediaError (e) {
         console.log(e)
       }
+
+      socket.emit('call', { to })
     }
   }
 })

@@ -13,6 +13,7 @@
 </template>
 <script>
   import { Blur, Flexbox } from 'vux'
+  import { mapState } from 'vuex'
   export default {
     components: {
       Blur, Flexbox
@@ -23,9 +24,12 @@
         text: '确认呼叫'
       }
     },
+    computed: {
+      ...mapState(['callStatus'])
+    },
     methods: {
       start () {
-        this.text = '呼叫中......'
+        this.text = this.callStatus === 1 ? '呼叫中......' : '接听'
         this.$store.commit('startRTC', {
           isCaller: true,
           remoteVideo: this.$refs.remoteVideo
@@ -37,7 +41,10 @@
     },
     mounted () {
       const _this = this
-      this.$store.dispatch('presetRTC', _this.$refs.localVideo)
+      this.$store.dispatch('presetRTC', {
+        localVideo: _this.$refs.localVideo,
+        to: this.to
+      })
     }
   }
 </script>

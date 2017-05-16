@@ -43,21 +43,19 @@
         const username = this.username
         const password = this.password
         if (!this.validate()) return
-        api.post('/login', {
-          username: username,
-          password: password
-        }).then(data => {
-          console.log(data)
-          if (data.code === 200) {
-            this.$store.commit('connecting', data.data.userId)
-            this.$router.push('/')
-          } else {
-            this.$vux.toast.show({
-              type: 'warn',
-              text: data.error
-            })
-          }
-        }).catch(e =>
+        api.post('/login', { username, password })
+          .then(data => {
+            console.log(data)
+            if (data.code === 200) {
+              this.$store.commit('connecting', data.data.userId)
+              this.$router.push('/')
+            } else {
+              this.$vux.toast.show({
+                type: 'warn',
+                text: data.error
+              })
+            }
+          }).catch(e =>
           this.$vux.toast.show({
             text: 'Error:' + e,
             type: 'warn'
