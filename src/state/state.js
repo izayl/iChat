@@ -45,6 +45,7 @@ var store = new Vuex.Store({
   state: {
     userId: localStorage.getItem('userId') ? localStorage.getItem('userId') : '',
     myAvatar: localStorage.getItem('avatar') ? localStorage.getItem('avatar') : '&#xe722;',
+    page: '/chatList',
     connected: false,
     clientId: null,
     chatStorage: {},
@@ -66,6 +67,9 @@ var store = new Vuex.Store({
     connected (state, socket) {
       state.connected = true
       state.clientId = socket.id
+    },
+    changePage (state, page) {
+      state.page = page
     },
     search (state, data) {
       state.searchList = [data]

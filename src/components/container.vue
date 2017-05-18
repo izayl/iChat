@@ -4,20 +4,22 @@
       最近聊天
     </x-header>
     <router-view></router-view>
-    <tabbar>
-      <tabbar-item selected link="/chatList">
-        <span slot="icon" class="iconfont icon-message"></span>
-        <span slot="label">最近聊天</span>
-      </tabbar-item>
-      <tabbar-item link="/friends">
-        <span slot="icon" class="iconfont icon-me"></span>
-        <span slot="label">联系人</span>
-      </tabbar-item>
-      <tabbar-item link="/settings">
-        <span slot="icon" class="iconfont icon-setting"></span>
-        <span slot="label">设置</span>
-      </tabbar-item>
-    </tabbar>
+    <keep-alive>
+      <tabbar>
+        <tabbar-item :selected="page === '/chatList'" link="/chatList">
+          <span slot="icon" class="iconfont icon-message"></span>
+          <span slot="label">最近聊天</span>
+        </tabbar-item>
+        <tabbar-item :selected="page === '/friends'" link="/friends">
+          <span slot="icon" class="iconfont icon-me"></span>
+          <span slot="label">联系人</span>
+        </tabbar-item>
+        <tabbar-item :selected="page === '/settings'" link="/settings">
+          <span slot="icon" class="iconfont icon-setting"></span>
+          <span slot="label">设置</span>
+        </tabbar-item>
+      </tabbar>
+    </keep-alive>
   </div>
 </template>
 <script>
@@ -29,12 +31,17 @@
       Tabbar, TabbarItem, Icon, XHeader
     },
     computed: {
-      ...mapState(['connected', 'clientId'])
+      ...mapState(['connected', 'clientId', 'page'])
     },
     mounted () {
       if (!this.connected) {
         this.$store.commit('connecting')
       }
+      this.$store.commit('changePage', this.$route.path)
+    },
+    beforeRouteUpdate (to, from, next) {
+      this.$store.commit('changePage', to.path)
+      next()
     }
   }
 </script>
