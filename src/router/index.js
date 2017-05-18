@@ -25,6 +25,9 @@ export default new Router({
       }, {
         path: '/friends',
         component: view('friends')
+      }, {
+        path: '/settings',
+        component: view('settings')
       }],
       beforeEnter: (to, from, next) => {
         if (!Store.state.userId) {

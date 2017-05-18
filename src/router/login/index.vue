@@ -47,7 +47,7 @@
           .then(data => {
             console.log(data)
             if (data.code === 200) {
-              this.$store.commit('connecting', data.data.userId)
+              this.$store.commit('connecting', data.data)
               this.$router.push('/')
             } else {
               this.$vux.toast.show({

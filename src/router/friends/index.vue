@@ -34,7 +34,7 @@
 
     <group>
       <template v-for="friend in friends">
-        <cell :title="friend.username" :inline-desc="friend.desc">
+        <cell :title="friend.username" :inline-desc="friend.desc" @click.native="goChat(friend.userId)">
           <i slot="icon" class="icon avatar" style="margin-right: 10px;" v-html="friend.avatar"></i>
         </cell>
       </template>
@@ -66,15 +66,6 @@
         this.show = true
         this.selectedUser = {...item}
         return
-//        console.log(item)
-//        if (!item.id) return
-//        this.vaule = ''
-//        this.$refs.search.cancel()
-//        this.$store.commit('addFriend', {
-//          username: item.title,
-//          userId: item.id
-//        })
-//        this.$router.push('/user/' + item.id)
       },
       getResult (val) {
         return debounce(() =>
@@ -99,8 +90,9 @@
             text: '添加失败<br>' + e
           }))
       },
-      goChat () {
-        this.$router.push('/user/' + this.selectedUser.userId)
+      goChat (id) {
+        const targetId = id || this.selectedUser.userId
+        this.$router.push('/user/' + targetId)
       }
     }
   }

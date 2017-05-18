@@ -44,18 +44,24 @@ var localStream
 var store = new Vuex.Store({
   state: {
     userId: localStorage.getItem('userId') ? localStorage.getItem('userId') : '',
+    myAvatar: localStorage.getItem('avatar') ? localStorage.getItem('avatar') : '&#xe722;',
     connected: false,
     clientId: null,
     chatStorage: {},
     searchList: [],
     friends: localStorage.getItem('friends') ? JSON.parse(localStorage.getItem('friends')) : [],
+    recent: [],
     callStatus: 0 // 0: noting , 1: calling, 2: be called
   },
   mutations: {
-    connecting (state, userId) {
+    connecting (state, data) {
       socket.connect()
-      state.userId = userId || state.userId
-      localStorage.setItem('userId', state.userId)
+      if (data) {
+        state.userId = data.userId || state.userId
+        state.myAvatar = data.avatar || state.avatar
+        localStorage.setItem('userId', state.userId)
+        localStorage.setItem('avatar', state.avatar)
+      }
     },
     connected (state, socket) {
       state.connected = true
@@ -73,6 +79,14 @@ var store = new Vuex.Store({
     addFriend (state, data) {
       state.friends.push(data)
       localStorage.setItem('friends', JSON.stringify(state.friends))
+    },
+    addRecent (state, data) {
+      var isAdded = state.recent.filter(item => item.userId === data.userId)
+      if (state.recent.length > 0 && isAdded.length > 0) return
+      state.recent.push(data)
+    },
+    removeRecent (state, index) {
+      state.recent.splice(index, 1)
     },
     sendMessage (state, data) {
       if (!state.chatStorage[data.toUser]) {

@@ -1,13 +1,16 @@
 <template>
   <div class="user">
-    <x-header @on-click-back="back" style="position: fixed;left:0;right:0">{{username}}</x-header>
+    <x-header :left-options="{showBack: false}" style="position: fixed;left:0;right:0">
+      <div slot="left" @click="back" class="back">
+        <i class="iconfont icon-left"></i>
+      </div>
+      {{username}}
+    </x-header>
     <div class="chat-content">
       <div class="chat-item" v-for="message in messages">
         <flexbox>
           <flexbox-item :span="1/5" class="chat-thumb" :style="{'order': message.fromUser === userId ? 1 : 0}">
-            <img
-              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAMAAABgZ9sFAAAAVFBMVEXx8fHMzMzr6+vn5+fv7+/t7e3d3d2+vr7W1tbHx8eysrKdnZ3p6enk5OTR0dG7u7u3t7ejo6PY2Njh4eHf39/T09PExMSvr6+goKCqqqqnp6e4uLgcLY/OAAAAnklEQVRIx+3RSRLDIAxE0QYhAbGZPNu5/z0zrXHiqiz5W72FqhqtVuuXAl3iOV7iPV/iSsAqZa9BS7YOmMXnNNX4TWGxRMn3R6SxRNgy0bzXOW8EBO8SAClsPdB3psqlvG+Lw7ONXg/pTld52BjgSSkA3PV2OOemjIDcZQWgVvONw60q7sIpR38EnHPSMDQ4MjDjLPozhAkGrVbr/z0ANjAF4AcbXmYAAAAASUVORK5CYII="
-              alt="">
+            <i class="icon avatar" v-html="message.fromUser === userId ? avatar : myAvatar"></i>
           </flexbox-item>
           <flexbox-item :span="4/5">
             <div class="chat-message">
@@ -63,8 +66,15 @@
         var friend = state.friends.filter(item => item.userId === this.friendId)
         return friend[0].username
       },
+      avatar: function (state) {
+        var friend = state.friends.filter(item => item.userId === this.friendId)
+        return friend[0].avatar
+      },
       userId (state) {
         return state.userId
+      },
+      myAvatar (state) {
+        return state.myAvatar
       }
     }),
     methods: {
@@ -80,7 +90,8 @@
         this.$refs.textarea.focus()
       },
       back () {
-        this.$router.replace('/chatList')
+        console.log('back')
+        this.$router.replace('/')
       },
       send () {
         this.$store.commit('sendMessage', {
@@ -108,6 +119,11 @@
       this.$nextTick(() => {
         Autosize(this.$refs.textarea)
       })
+      this.$store.commit('addRecent', {
+        username: this.username,
+        userId: this.friendId,
+        avatar: this.avatar
+      })
     }
   }
 </script>
@@ -116,6 +132,18 @@
 
   .user {
     flex: 1;
+    .back {
+      width: 60px;
+      height: 45px;
+      position: absolute;
+      top: 0px;
+      left: 0;
+      margin-top: -13px;
+      margin-left: -18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 
   .chat-input {
@@ -158,7 +186,7 @@
   }
 
   .chat-thumb {
-    img {
+    i {
       width: 45px;
       height: 45px;
       border-radius: 50%;
