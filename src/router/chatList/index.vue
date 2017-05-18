@@ -3,7 +3,9 @@
     <group v-if="recent.length > 0" >
       <template v-for="(friend, index) in recent">
         <cell :title="friend.username" :link="`/user/${friend.userId}`" :isLink="true">
-          <i slot="icon" width="20" class="icon avatar list-thumb" v-html="friend.avatar"></i>
+          <svg class="avatar list-thumb" aria-hidden="true" slot="icon">
+            <use :xlink:href="'#avatar-' + friend.avatar"></use>
+          </svg>
           <x-button slot="child" @click.native.stop="remove(index)" mini>删除</x-button>
         </cell>
       </template>

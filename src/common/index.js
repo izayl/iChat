@@ -8,6 +8,7 @@ require('./adapter')
 require('./common.scss')
 require('vux/src/styles/reset.less')
 require('vux/src/styles/1px.less')
+require('./iconfont')
 
 const qs = require('query-string')
 // global axios instance

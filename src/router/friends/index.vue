@@ -15,7 +15,9 @@
         <div style="width: 95%;background-color:#fff;height:250px;margin:0 auto;border-radius:5px;padding-top:10px;">
           <group>
             <cell :title="selectedUser.username" :inline-desc="selectedUser.desc">
-              <i slot="icon" class="icon avatar" style="margin-right: 10px;" v-html="selectedUser.avatar"></i>
+              <svg class="avatar" aria-hidden="true" slot="icon" style="margin-right: 10px;">
+                <use :xlink:href="'#avatar-' + selectedUser.avatar"></use>
+              </svg>
             </cell>
           </group>
           <div style="padding:20px 15px;">
@@ -35,7 +37,9 @@
     <group>
       <template v-for="friend in friends">
         <cell :title="friend.username" :inline-desc="friend.desc" @click.native="goChat(friend.userId)">
-          <i slot="icon" class="icon avatar" style="margin-right: 10px;" v-html="friend.avatar"></i>
+          <svg slot="icon" class="avatar" style="margin-right: 10px;" aria-hidden="true">
+            <use :xlink:href="'#avatar-' + friend.avatar"></use>
+          </svg>
         </cell>
       </template>
     </group>

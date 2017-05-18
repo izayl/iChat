@@ -1,14 +1,7 @@
-@font-face {
-  font-family: "avatar";
-  src: url('../fonts/avatar.eot'); /* IE9*/
-  src: url('../fonts/avatar.eot#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('../fonts/avatar.woff') format('woff'), /* chrome, firefox */ url('../fonts/avatar.ttf') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/ url('../fonts/avatar.svg#avatar') format('svg'); /* iOS 4.1- */
-}
-
 .avatar {
-  font-family: "avatar" !important;
-  font-size: 36px;
-  font-style: normal;
-  -webkit-font-smoothing: antialiased;
-  -webkit-text-stroke-width: 0.2px;
-  -moz-osx-font-smoothing: grayscale;
+  width: 1em; height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+  font-size: 48px;
 }

@@ -44,7 +44,7 @@ var localStream
 var store = new Vuex.Store({
   state: {
     userId: localStorage.getItem('userId') ? localStorage.getItem('userId') : '',
-    myAvatar: localStorage.getItem('avatar') ? localStorage.getItem('avatar') : '&#xe722;',
+    myAvatar: localStorage.getItem('avatar') ? localStorage.getItem('avatar') : '0',
     page: '/chatList',
     connected: false,
     clientId: null,

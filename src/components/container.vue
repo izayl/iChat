@@ -1,7 +1,7 @@
 <template>
   <div class="main">
-    <x-header :left-options="{showBack: false}" :right-options="{showMore: true}" @on-click-more="showMenus = true">
-      最近聊天
+    <x-header :left-options="{showBack: false}" @on-click-more="showMenus = true">
+      {{title}}
     </x-header>
     <router-view></router-view>
     <keep-alive>
@@ -26,12 +26,21 @@
   import { Tabbar, TabbarItem, Icon, XHeader } from 'vux'
   import { mapState } from 'vuex'
 
+  const titleMap = {
+    '/chatList': '最近聊天',
+    '/friends': '联系人',
+    '/settings': '设置'
+  }
+
   export default {
     components: {
       Tabbar, TabbarItem, Icon, XHeader
     },
     computed: {
-      ...mapState(['connected', 'clientId', 'page'])
+      ...mapState(['connected', 'clientId', 'page']),
+      title () {
+        return titleMap[this.page]
+      }
     },
     mounted () {
       if (!this.connected) {

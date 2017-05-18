@@ -10,7 +10,9 @@
       <div class="chat-item" v-for="message in messages">
         <flexbox>
           <flexbox-item :span="1/5" class="chat-thumb" :style="{'order': message.fromUser === userId ? 1 : 0}">
-            <i class="icon avatar" v-html="message.fromUser === userId ? avatar : myAvatar"></i>
+            <svg class="avatar" aria-hidden="true">
+              <use :xlink:href="'#avatar-' + (message.fromUser === userId ? avatar : myAvatar)"></use>
+            </svg>
           </flexbox-item>
           <flexbox-item :span="4/5">
             <div class="chat-message">
@@ -91,7 +93,7 @@
       },
       back () {
         console.log('back')
-        this.$router.replace('/')
+        this.$router.replace('/chatList')
       },
       send () {
         this.$store.commit('sendMessage', {
@@ -186,7 +188,7 @@
   }
 
   .chat-thumb {
-    i {
+    svg {
       width: 45px;
       height: 45px;
       border-radius: 50%;
