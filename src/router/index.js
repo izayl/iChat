@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import Hello from '@/components/Hello'
+import Store from '../state/state'
 
 Vue.use(Router)
 const Login = () => import('./login/index.vue')
@@ -11,6 +11,9 @@ const view = (comp) => () => import('./' + comp + '/index.vue')
 export default new Router({
   routes: [
     {
+      path: '*',
+      redirect: '/404'
+    }, {
       path: '/',
       component: App,
       children: [{
@@ -22,7 +25,14 @@ export default new Router({
       }, {
         path: '/friends',
         component: view('friends')
-      }]
+      }],
+      beforeEnter: (to, from, next) => {
+        if (!Store.state.userId) {
+          next({path: '/login'})
+        } else {
+          next()
+        }
+      }
     }, {
       path: '/login',
       name: 'Login',
@@ -34,11 +44,29 @@ export default new Router({
     }, {
       path: '/user/:userId',
       name: 'User',
-      component: view('user')
+      component: view('user'),
+      beforeEnter: (to, from, next) => {
+        if (!Store.state.userId) {
+          next({path: '/login'})
+        } else {
+          next()
+        }
+      }
     }, {
       path: '/rtc/:userId',
       name: 'RTC',
-      component: view('rtc')
+      component: view('rtc'),
+      beforeEnter: (to, from, next) => {
+        if (!Store.state.userId) {
+          next({path: '/login'})
+        } else {
+          next()
+        }
+      }
+    }, {
+      path: '/404',
+      name: '404',
+      component: view('404')
     }, {
       path: '/test',
       name: 'Test',
