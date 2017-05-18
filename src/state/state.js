@@ -48,7 +48,7 @@ var store = new Vuex.Store({
     clientId: null,
     chatStorage: {},
     searchList: [],
-    friends: localStorage.getItem('friends') ? JSON.parse(localStorage.getItem('friends')) : {},
+    friends: localStorage.getItem('friends') ? JSON.parse(localStorage.getItem('friends')) : [],
     callStatus: 0 // 0: noting , 1: calling, 2: be called
   },
   mutations: {
@@ -65,7 +65,7 @@ var store = new Vuex.Store({
       state.searchList = [data]
     },
     addFriend (state, data) {
-      state.friends[data.userId] = data.username
+      state.friends.push(data)
       localStorage.setItem('friends', JSON.stringify(state.friends))
     },
     sendMessage (state, data) {
@@ -129,7 +129,7 @@ var store = new Vuex.Store({
       }
     },
     closeRTC (state) {
-    //  TODO: add peerConnection Close function
+      //  TODO: add peerConnection Close function
       peerConnection.close()
     },
     changeCallStatus (state, status) {
@@ -137,9 +137,9 @@ var store = new Vuex.Store({
     }
   },
   actions: {
-    search ({ commit }, username) {
+    search ({ commit, state }, username) {
       console.log('search')
-      return api.post('/search', { username })
+      return api.post('/search', { username, id: state.userId })
         .then(res => commit('search', res.data))
         .catch(e => console.log(e))
     },
@@ -191,6 +191,20 @@ var store = new Vuex.Store({
       }
 
       socket.emit('call', { to })
+    },
+    addFriend ({ commit, state }, friend) {
+      var isAdded = state.friends.length > 0 ? state.friends.filter(item => item.userId === friend.userId) : false
+      console.log('isAddedisAdded')
+      console.log(Boolean(isAdded))
+      if (isAdded) {
+        var err = new Promise((resolve, reject) => reject('已经添加过该好友'))
+        return err
+      }
+      return api.post('/addFriend', { friendId: friend.userId, myId: state.userId })
+        .then(res => {
+          commit('addFriend', friend)
+          return res
+        })
     }
   }
 })
