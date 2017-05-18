@@ -1,7 +1,7 @@
 <template>
   <div>404 NOT FOUND</div>
 </template>
-<style>
+<style scoped>
   div {
     display: flex;
     justify-content: center;
