@@ -60,7 +60,8 @@
         return state.chatStorage[this.friendId] || {}
       },
       username: function (state) {
-        return state.friends[this.friendId]
+        var friend = state.friends.filter(item => item.userId === this.friendId)
+        return friend[0].username
       },
       userId (state) {
         return state.userId

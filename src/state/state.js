@@ -64,6 +64,12 @@ var store = new Vuex.Store({
     search (state, data) {
       state.searchList = [data]
     },
+    searchLocal (state, data) {
+      console.log(data)
+      data.fromLocal = true
+      data.title = data.username
+      state.searchList = [data]
+    },
     addFriend (state, data) {
       state.friends.push(data)
       localStorage.setItem('friends', JSON.stringify(state.friends))
@@ -139,9 +145,15 @@ var store = new Vuex.Store({
   actions: {
     search ({ commit, state }, username) {
       console.log('search')
-      return api.post('/search', { username, id: state.userId })
-        .then(res => commit('search', res.data))
-        .catch(e => console.log(e))
+      var isAdded = state.friends.length > 0 ? state.friends.filter(item => item.username === username) : false
+      console.log(isAdded)
+      if (isAdded.length > 0) {
+        commit('searchLocal', ...isAdded)
+      } else {
+        return api.post('/search', { username, id: state.userId })
+          .then(res => commit('search', res.data))
+          .catch(e => console.log(e))
+      }
     },
     presetRTC ({ commit }, { localVideo, to }) {
       socket.on('message', message => {
@@ -194,9 +206,7 @@ var store = new Vuex.Store({
     },
     addFriend ({ commit, state }, friend) {
       var isAdded = state.friends.length > 0 ? state.friends.filter(item => item.userId === friend.userId) : false
-      console.log('isAddedisAdded')
-      console.log(Boolean(isAdded))
-      if (isAdded) {
+      if (isAdded.length > 0) {
         var err = new Promise((resolve, reject) => reject('已经添加过该好友'))
         return err
       }

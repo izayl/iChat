@@ -19,7 +19,12 @@
             </cell>
           </group>
           <div style="padding:20px 15px;">
-            <x-button type="primary" @click.native="onAdd">添加好友</x-button>
+            <template v-if="selectedUser.fromLocal">
+              <x-button type="primary" @click.native="goChat">聊天</x-button>
+            </template>
+            <template v-else>
+              <x-button type="primary" @click.native="onAdd">添加好友</x-button>
+            </template>
             <x-button @click.native="onCancel">取消</x-button>
           </div>
         </div>
@@ -59,12 +64,7 @@
     methods: {
       resultClick (item) {
         this.show = true
-        this.selectedUser = {
-          userId: item.userId,
-          username: item.username,
-          desc: item.desc,
-          avatar: item.avatar
-        }
+        this.selectedUser = {...item}
         return
 //        console.log(item)
 //        if (!item.id) return
@@ -77,9 +77,8 @@
 //        this.$router.push('/user/' + item.id)
       },
       getResult (val) {
-        const _this = this
         return debounce(() =>
-          _this.$store.dispatch('search', val), 500)()
+          this.$store.dispatch('search', val), 1000)()
       },
       onCancel () {
         this.show = false
@@ -99,6 +98,9 @@
             type: 'warn',
             text: '添加失败<br>' + e
           }))
+      },
+      goChat () {
+        this.$router.push('/user/' + this.selectedUser.userId)
       }
     }
   }
