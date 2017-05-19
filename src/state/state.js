@@ -28,8 +28,11 @@ socket.on('receiveFromUser', function (data) {
 
 // be called by somebody
 socket.on('called', function (data) {
-  Vue.$router.push('#/rtc/' + data)
-  store.commit('changeCallStatus', 2)
+  console.log('called')
+  store.commit('changeCallStatus', {
+    status: 2,
+    id: data.caller
+  })
 })
 
 var peerConnection
@@ -52,7 +55,8 @@ var store = new Vuex.Store({
     searchList: [],
     friends: localStorage.getItem('friends') ? JSON.parse(localStorage.getItem('friends')) : [],
     recent: [],
-    callStatus: 0 // 0: noting , 1: calling, 2: be called
+    callStatus: 0, // 0: noting , 1: calling, 2: be called,
+    callerId: null
   },
   mutations: {
     connecting (state, data) {
@@ -106,6 +110,14 @@ var store = new Vuex.Store({
         ...data,
         fromUser: state.userId
       })
+
+      if (data.isVideo) {
+        console.log('emit call')
+        socket.emit('call', {
+          caller: state.userId,
+          callee: data.toUser
+        })
+      }
     },
     receiveMessage (state, data) {
       if (!state.chatStorage[data.fromUser]) {
@@ -156,8 +168,9 @@ var store = new Vuex.Store({
       //  TODO: add peerConnection Close function
       peerConnection.close()
     },
-    changeCallStatus (state, status) {
-      state.callStatus = status
+    changeCallStatus (state, data) {
+      state.callStatus = data.status
+      state.callerId = data.caller
     }
   },
   actions: {
@@ -219,8 +232,6 @@ var store = new Vuex.Store({
       function getUserMediaError (e) {
         console.log(e)
       }
-
-      socket.emit('call', { to })
     },
     addFriend ({ commit, state }, friend) {
       var isAdded = state.friends.length > 0 ? state.friends.filter(item => item.userId === friend.userId) : false

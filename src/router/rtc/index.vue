@@ -5,7 +5,7 @@
       <!--<input type="button" id="start" @click="start" value="Start Video" />-->
       <!--<input type="button" id="close" @click="close" value="Start Video" />-->
         <!--<span>正在等待对方接听</span>-->
-        <span class="iconfont icon-message" @click="start"> {{text}} </span>
+        <span class="iconfont icon-message" @click.native="start"> {{text}} </span>
     </flexbox>
     <video id="localVideo" autoplay muted ref="localVideo"></video>
     <video id="remoteVideo" autoplay ref="remoteVideo"></video>
@@ -20,31 +20,50 @@
     },
     data () {
       return {
-        to: this.$route.params.userId,
-        text: '确认呼叫'
+        to: this.$route.params.userId
       }
     },
     computed: {
-      ...mapState(['callStatus'])
+      ...mapState(['callStatus']),
+      text () {
+        switch (this.callStatus) {
+          case 0:
+            return '呼叫'
+          case 1:
+            return '呼叫中'
+          case 2:
+            return '接听'
+        }
+      }
     },
     methods: {
       start () {
-        this.text = this.callStatus === 1 ? '呼叫中......' : '接听'
-        this.$store.commit('startRTC', {
-          isCaller: true,
-          remoteVideo: this.$refs.remoteVideo
-        })
+        const status = this.callStatus
+        if (status === 0) {
+          // Call
+          this.$store.commit('startRTC', {
+            isCaller: true,
+            remoteVideo: this.$refs.remoteVideo
+          })
+        } else if (status === 2) {
+          // response
+          this.$store.dispatch('presetRTC', {
+            localVideo: this.$refs.localVideo,
+            to: this.to
+          })
+        }
       },
       close () {
         this.$store.commit('closeRTC')
       }
     },
     mounted () {
-      const _this = this
-      this.$store.dispatch('presetRTC', {
-        localVideo: _this.$refs.localVideo,
-        to: this.to
-      })
+      if (this.callStatus === 0) {
+        this.$store.dispatch('presetRTC', {
+          localVideo: this.$refs.localVideo,
+          to: this.to
+        })
+      }
     }
   }
 </script>

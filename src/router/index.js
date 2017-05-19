@@ -8,7 +8,7 @@ const App = () => import('../components/container.vue')
 
 const view = (comp) => () => import('./' + comp + '/index.vue')
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '*',
@@ -76,3 +76,5 @@ export default new Router({
       component: () => import('../components/list.vue')
     }]
 })
+
+export default router

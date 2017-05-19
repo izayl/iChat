@@ -77,6 +77,9 @@
       },
       myAvatar (state) {
         return state.myAvatar
+      },
+      callStatus (state) {
+        return state.callStatus
       }
     }),
     methods: {
@@ -114,6 +117,11 @@
           })
         },
         deep: true
+      },
+      callStatus (val) {
+        if (val === 2) {
+          this.$router.push('/rtc/' + 'dfa')
+        }
       }
     },
     mounted () {
