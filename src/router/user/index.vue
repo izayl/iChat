@@ -61,7 +61,6 @@
     },
     computed: mapState({
       messages: function (state) {
-        console.log(state.chatStorage[this.friendId])
         return state.chatStorage[this.friendId] || {}
       },
       username: function (state) {
@@ -111,7 +110,6 @@
     watch: {
       messages: {
         handler () {
-          console.log('true')
           this.$scrollTo('#hook', {
             easing: 'ease-in'
           })

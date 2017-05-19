@@ -26,6 +26,32 @@ socket.on('receiveFromUser', function (data) {
   store.commit('receiveMessage', data)
 })
 
+socket.on('message', message => {
+  console.log('on message')
+  console.dir(message)
+  if (!peerConnection) store.commit('startRTC', false)
+
+  var signal = message
+  if (signal.sdp) {
+    peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp), function () {
+      if (signal.sdp.type === 'offer') {
+        peerConnection.createAnswer((description) => {
+          console.log('got description')
+          peerConnection.setLocalDescription(description, function () {
+            socket.emit('send', {
+              'sdp': description
+            })
+          }, function () {
+            console.log('set description error')
+          })
+        }, e => console.log(e))
+      }
+    })
+  } else if (signal.ice) {
+    peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice))
+  }
+})
+
 // be called by somebody
 socket.on('called', function (data) {
   console.log('called')
@@ -165,8 +191,7 @@ var store = new Vuex.Store({
       }
     },
     closeRTC (state) {
-      //  TODO: add peerConnection Close function
-      peerConnection.close()
+      localStream.stop()
     },
     changeCallStatus (state, data) {
       state.callStatus = data.status
@@ -186,38 +211,13 @@ var store = new Vuex.Store({
           .catch(e => console.log(e))
       }
     },
-    presetRTC ({ commit }, { localVideo, to }) {
-      socket.on('message', message => {
-        console.log('on message')
-        console.dir(message)
-        if (!peerConnection) commit('startRTC', false)
-
-        var signal = message
-        if (signal.sdp) {
-          peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp), function () {
-            if (signal.sdp.type === 'offer') {
-              peerConnection.createAnswer((description) => {
-                console.log('got description')
-                peerConnection.setLocalDescription(description, function () {
-                  socket.emit('send', {
-                    'sdp': description
-                  })
-                }, function () {
-                  console.log('set description error')
-                })
-              }, e => console.log(e))
-            }
-          })
-        } else if (signal.ice) {
-          peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice))
-        }
-      })
-
+    presetRTC (context, { localVideo, to }) {
+      // media options
       var constraints = {
         video: true,
         audio: true
       }
-
+      // get local media stream
       if (navigator.getUserMedia) {
         navigator.getUserMedia(constraints, getUserMediaSuccess, getUserMediaError)
       } else {
@@ -225,6 +225,14 @@ var store = new Vuex.Store({
       }
 
       function getUserMediaSuccess (stream) {
+        // re-add the stop function
+        if (!stream.stop && stream.getTracks) {
+          stream.stop = function () {
+            this.getTracks().forEach(function (track) {
+              track.stop()
+            })
+          }
+        }
         localStream = stream
         localVideo.src = window.URL.createObjectURL(stream)
       }

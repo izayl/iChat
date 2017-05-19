@@ -1,11 +1,11 @@
 <template>
   <div class="rtc">
-    <!--TODO: Add Close Button-->
     <flexbox id="mask" justify="center" align="center">
       <!--<input type="button" id="start" @click="start" value="Start Video" />-->
       <!--<input type="button" id="close" @click="close" value="Start Video" />-->
-        <!--<span>正在等待对方接听</span>-->
-        <span class="iconfont icon-message" @click.native="start"> {{text}} </span>
+      <!--<span>正在等待对方接听</span>-->
+      <span class="vux-close" @click="close"></span>
+      <span class="iconfont icon-message" @click.native="start"> {{text}} </span>
     </flexbox>
     <video id="localVideo" autoplay muted ref="localVideo"></video>
     <video id="remoteVideo" autoplay ref="remoteVideo"></video>
@@ -39,34 +39,49 @@
     methods: {
       start () {
         const status = this.callStatus
-        if (status === 0) {
-          // Call
-          this.$store.commit('startRTC', {
-            isCaller: true,
-            remoteVideo: this.$refs.remoteVideo
-          })
-        } else if (status === 2) {
-          // response
-          this.$store.dispatch('presetRTC', {
-            localVideo: this.$refs.localVideo,
-            to: this.to
-          })
+        if (status === 2) {
+          // for callee is to accept to be called
+          this.$store.commit
+        } else {
+          // for caller is to confirm to call
+
         }
       },
       close () {
-        this.$store.commit('closeRTC')
+        this.$router.back()
       }
     },
     mounted () {
-      if (this.callStatus === 0) {
-        this.$store.dispatch('presetRTC', {
-          localVideo: this.$refs.localVideo,
-          to: this.to
-        })
-      }
+      // to show local video
+      this.$store.dispatch('presetRTC', {
+        localVideo: this.$refs.localVideo,
+        to: this.to
+      })
+    },
+    beforeRouteLeave (to, from, next) {
+      // 导航离开该组件的对应路由时调用
+      // 可以访问组件实例 `this`
+      this.$store.commit('closeRTC')
+      next()
     }
   }
 </script>
+<style lang="less">
+  @import '~vux/src/styles/close.less';
+
+  .vux-close:before, .vux-close:after {
+    height: 5px;
+    color: #fff;
+  }
+
+  .vux-close {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    font-size: 36px;
+    font-weight: bolder;
+  }
+</style>
 <style lang="scss">
   .rtc {
     flex: 1;
