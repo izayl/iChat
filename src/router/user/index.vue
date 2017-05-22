@@ -11,7 +11,7 @@
         <flexbox>
           <flexbox-item :span="1/5" class="chat-thumb" :style="{'order': message.fromUser === userId ? 1 : 0}">
             <svg class="avatar" aria-hidden="true">
-              <use :xlink:href="'#avatar-' + (message.fromUser === userId ? avatar : myAvatar)"></use>
+              <use :xlink:href="'#avatar-' + message.avatar"></use>
             </svg>
           </flexbox-item>
           <flexbox-item :span="4/5">
@@ -64,11 +64,15 @@
         return state.chatStorage[this.friendId] || {}
       },
       username: function (state) {
-        var friend = state.friends.filter(item => item.userId === this.friendId)
+        var friend
+        if (state.friends.length > 0) friend = state.friends.filter(item => item.userId === this.friendId)
+        else friend = state.recent.filter(item => item.userId === this.friendId)
         return friend[0].username
       },
       avatar: function (state) {
-        var friend = state.friends.filter(item => item.userId === this.friendId)
+        var friend
+        if (state.friends.length > 0) friend = state.friends.filter(item => item.userId === this.friendId)
+        else friend = state.recent.filter(item => item.userId === this.friendId)
         return friend[0].avatar
       },
       userId (state) {
@@ -79,22 +83,22 @@
       },
       callStatus (state) {
         return state.callStatus
+      },
+      callToken (state) {
+        return state.callToken
       }
     }),
     methods: {
       facetime () {
-        this.$router.push('/rtc/' + this.friendId)
-        this.$store.commit('sendMessage', {
-          toUser: this.friendId,
-          content: '#/rtc/' + this.friendId,
-          isVideo: true
-        })
         this.message = ''
         Autosize(this.$refs.textarea)
-        this.$refs.textarea.focus()
+
+        this.$store.commit('changeCallStatus', {status: 'caller', callee: this.friendId})
+        this.$router.push('/rtc/' + this.callToken)
       },
       back () {
         console.log('back')
+        this.$store.commit('clearUnread', this.friendId)
         this.$router.replace('/chatList')
       },
       send () {
@@ -115,11 +119,6 @@
           })
         },
         deep: true
-      },
-      callStatus (val) {
-        if (val === 2) {
-          this.$router.push('/rtc/' + 'dfa')
-        }
       }
     },
     mounted () {

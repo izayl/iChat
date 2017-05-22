@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import store from './state/state'
 import FastClick from 'fastclick'
-import { ToastPlugin } from 'vux'
+import { ToastPlugin, ConfirmPlugin } from 'vux'
 import App from './App'
 import router from './router'
 import VueTimeago from 'vue-timeago'
@@ -22,6 +22,7 @@ Vue.use(VueTimeago, {
 
 // Vue.use(Vuex)
 Vue.use(ToastPlugin)
+Vue.use(ConfirmPlugin)
 
 FastClick.attach(document.body)
 

@@ -5,6 +5,7 @@
  * @Contact: izayl@163.com
  */
 require('./adapter')
+// require('webrtc-adapter')
 require('./common.scss')
 require('vux/src/styles/reset.less')
 require('vux/src/styles/1px.less')

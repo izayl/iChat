@@ -36,16 +36,18 @@
     components: {
       Tabbar, TabbarItem, Icon, XHeader
     },
+    data () {
+      return {
+        show: false
+      }
+    },
     computed: {
       ...mapState(['connected', 'clientId', 'page']),
       title () {
-        return titleMap[this.page]
+        return titleMap[this.page] || '最近聊天'
       }
     },
     mounted () {
-      if (!this.connected) {
-        this.$store.commit('connecting')
-      }
       this.$store.commit('changePage', this.$route.path)
     },
     beforeRouteUpdate (to, from, next) {

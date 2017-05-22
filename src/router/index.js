@@ -56,7 +56,7 @@ const router = new Router({
         }
       }
     }, {
-      path: '/rtc/:userId',
+      path: '/rtc/:token',
       name: 'RTC',
       component: view('rtc'),
       beforeEnter: (to, from, next) => {

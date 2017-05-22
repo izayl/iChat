@@ -1,12 +1,5 @@
 <template>
   <div class="rtc">
-    <flexbox id="mask" justify="center" align="center">
-      <!--<input type="button" id="start" @click="start" value="Start Video" />-->
-      <!--<input type="button" id="close" @click="close" value="Start Video" />-->
-      <!--<span>正在等待对方接听</span>-->
-      <span class="vux-close" @click="close"></span>
-      <span class="iconfont icon-message" @click.native="start"> {{text}} </span>
-    </flexbox>
     <video id="localVideo" autoplay muted ref="localVideo"></video>
     <video id="remoteVideo" autoplay ref="remoteVideo"></video>
   </div>
@@ -20,43 +13,19 @@
     },
     data () {
       return {
-        to: this.$route.params.userId
+        token: this.$route.params.token
       }
     },
     computed: {
-      ...mapState(['callStatus']),
-      text () {
-        switch (this.callStatus) {
-          case 0:
-            return '呼叫'
-          case 1:
-            return '呼叫中'
-          case 2:
-            return '接听'
-        }
-      }
+      ...mapState(['callStatus', 'rtcMsg', 'callerId'])
     },
     methods: {
-      start () {
-        const status = this.callStatus
-        if (status === 2) {
-          // for callee is to accept to be called
-          this.$store.commit
-        } else {
-          // for caller is to confirm to call
-
-        }
-      },
       close () {
         this.$router.back()
       }
     },
     mounted () {
-      // to show local video
-      this.$store.dispatch('presetRTC', {
-        localVideo: this.$refs.localVideo,
-        to: this.to
-      })
+      this.$store.commit('create or join', this.token)
     },
     beforeRouteLeave (to, from, next) {
       // 导航离开该组件的对应路由时调用

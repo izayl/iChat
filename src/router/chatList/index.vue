@@ -6,6 +6,9 @@
           <svg class="avatar list-thumb" aria-hidden="true" slot="icon">
             <use :xlink:href="'#avatar-' + friend.avatar"></use>
           </svg>
+          <div class="badge-value" v-show="newMessage[friend.userId]" slot="value">
+            <badge :text="newMessage[friend.userId]"></badge>
+          </div>
           <x-button slot="child" @click.native.stop="remove(index)" mini>删除</x-button>
         </cell>
       </template>
@@ -26,7 +29,7 @@
   import { mapState } from 'vuex'
   export default {
     components: { Group, Cell, Badge, XButton },
-    computed: mapState(['recent']),
+    computed: mapState(['recent', 'newMessage']),
     methods: {
       remove (index) {
         this.$store.commit('removeRecent', index)
